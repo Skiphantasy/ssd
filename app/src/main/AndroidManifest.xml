@@ -24,6 +24,8 @@
         </activity>
         <activity android:name=".RefundReceipt">
         </activity>
+        <activity android:name=".QueryReceipt">
+        </activity>
 
     </application>
 

@@ -14,12 +14,17 @@
     <string name="receipt_cod">Código de Factura</string>
     <string name="query_button">Consultar Factura</string>
     <string name="refund_button">Devolver Producto</string>
-    <string name="enter_name">Devolver Producto</string>
-    <string name="enter_receipt">Devolver Producto</string>
-    <string name="menu_buttons">4</string>
+    <string name="enter_name">Introduce nombre</string>
+    <string name="enter_receipt">Introduce código de factura (numérico)</string>
+    <string name="menu_buttons">3</string>
     <string name="spinners">2</string>
     <string name="amount">10</string>
     <string name="toast">Petición al proveedor. Stock Actualizado</string>
+    <string name="toast_rr">El código de factura debe ser numérico</string>
+    <string name="toast_update">Base de datos actualizada</string>
+    <string name="table_ssd">ssd</string>
+    <string name="table_items">items</string>
+    <string name="table_receipt">receipts</string>
 
     <string-array name="ssdtypes">
         <item>Samsung 850 PRO 128 GB</item>

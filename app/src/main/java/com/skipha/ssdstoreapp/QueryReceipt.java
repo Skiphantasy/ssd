@@ -8,7 +8,6 @@
 package com.skipha.ssdstoreapp;
 
 
-import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -26,19 +25,19 @@ import java.util.Arrays;
 /**
  * RefundReceipt Class
  */
-public class RefundReceipt extends AppCompatActivity {
+public class QueryReceipt extends AppCompatActivity {
     /**
      * Attributes
      */
-    private String TABLE_ITEMS;
+    private static final String TABLE_ITEMS = "items";
     private int code;
     private SQLiteDatabase db;
     private SQLiteHelper helper;
     private ListView listView;
     private String toastMsg;
-    private ArrayList<TextView> textViews;
     private ArrayList<Items> items;
     private ArrayList<String> types;
+    private ArrayList<TextView> textViews;
     private ArrayList<String> prices;
     private MyAdapter adapter;
     private Button button;
@@ -53,16 +52,15 @@ public class RefundReceipt extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         code = (int)bundle.get("code");
         items = new ArrayList<>();
-        textViews = new ArrayList<>();
         types = new ArrayList<>();
         prices = new ArrayList<>();
         toastMsg = getResources().getString(R.string.toast_update);
         button = findViewById(R.id.button3);
-        TABLE_ITEMS = getResources().getString(R.string.table_items);
-        listView = findViewById(R.id.receiptListView);
+        textViews = new ArrayList<>();
         textViews.add((TextView)findViewById(R.id.textView26));
         textViews.add((TextView)findViewById(R.id.textView20));
         textViews.get(1).setText("" + code);
+        listView = findViewById(R.id.receiptListView);
         helper = new  SQLiteHelper(this, "SSDStore.db", null, 1);
         db = helper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_ITEMS + " WHERE  codfactura = " + code, null);
@@ -75,50 +73,16 @@ public class RefundReceipt extends AppCompatActivity {
                         Integer.parseInt(cursor.getString(cursor.getColumnIndex("cantidad")))));
             }
         }
-        calculatetotal();
+
         String [] data = new String[items.size()];
         adapter = new MyAdapter(this, data, items);
         listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                items.get(position).setNumber(items.get(position).getNumber() - 1);
-                types = new ArrayList<String> (Arrays.asList(getResources().getStringArray(R.array.ssdtypes)));
-                prices = new ArrayList<String> (Arrays.asList(getResources().getStringArray(R.array.ssdprices)));
-
-                for (int i = 0; i < types.size(); i++) {
-                    if(items.get(position).getName().equals(types.get(i))) {
-                        items.get(position).setPrice(items.get(position).getPrice() - Integer.parseInt(prices.get(i)));
-                    }
-                }
-                if(items.get(position).getNumber() == 0) {
-                    items.remove(position);
-                    String []data = new String[items.size()];
-                    adapter = new MyAdapter((Activity)view.getContext(), data, items);
-                    listView.setAdapter(adapter);
-                }
-                calculatetotal();
-                adapter.notifyDataSetChanged();
-            }
-        });
-
+        calculatetotal();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        toastMsg + "",
-                        Toast.LENGTH_SHORT);
-                toast.show();
-                helper = new  SQLiteHelper(getBaseContext(), "SSDStore.db", null, 1);
-                db = helper.getWritableDatabase();
-                db.execSQL("DELETE FROM " + TABLE_ITEMS + " WHERE codfactura = " + code);
-                for (int i = 0; i < items.size(); i++) {
-                    db.execSQL("INSERT INTO " + TABLE_ITEMS + " VALUES ('" + items.get(i).getName() + "', "
-                            + items.get(i).getPrice() + ", " + items.get(i).getNumber() + ", " + code + ")");
-                }
-
-                adapter.notifyDataSetChanged();
+                finish();
             }
         });
     }

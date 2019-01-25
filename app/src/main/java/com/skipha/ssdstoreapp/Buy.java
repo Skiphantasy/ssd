@@ -1,6 +1,14 @@
+/**
+ * Author: Tania López Martín
+ * Date: 25/01/2019
+ * Version: 1.0
+ *
+ */
+
 package com.skipha.ssdstoreapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,24 +23,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.database.sqlite.SQLiteDatabase;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Buy extends AppCompatActivity {
+    /**
+     * Attributes
+     */
     private static final String TABLE_SSD = "ssd";
-    private static int amount;
     private static final String TABLE_RECEIPTS = "receipts";
     private static final String TABLE_ITEMS = "items";
+    private static int amount;
     private MyAdapter myadapter;
     private String toastMsg;
     private  ArrayList<Items> items;
+    private  ArrayList<Items> currentItems;
     private ArrayList<String> types;
-    private ArrayList<String> currentTypes;
     private ArrayList<String> prices;
-    private ArrayList<Integer> currentPrices;
-    private ArrayList<Integer> currentAmount;
     private ArrayList<Button> buttons;
     private ArrayList<Spinner> spinners;
     private int spinnersCount;
@@ -44,6 +52,10 @@ public class Buy extends AppCompatActivity {
     private ListView listView;
     private TextView textView;
 
+    /**
+     * onCreate
+     * @param savedInstanceState
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -52,13 +64,11 @@ public class Buy extends AppCompatActivity {
         relativeLayout = findViewById(R.id.rlay);
         textView = findViewById(R.id.textView24);
         items = new ArrayList<>();
+        currentItems = new ArrayList<>();
         buttons = new ArrayList<>();
         spinners = new ArrayList<>();
         amount = Integer.parseInt(getResources().getString(R.string.amount));
         types = new ArrayList<>();
-        currentTypes = new ArrayList<>();
-        currentPrices = new ArrayList<>();
-        currentAmount = new ArrayList<>();
         prices = new ArrayList<>();
         numbers = new ArrayList<>();
         listView = findViewById(R.id.listview);
@@ -85,6 +95,10 @@ public class Buy extends AppCompatActivity {
         });
     }
 
+    /**
+     * int
+     * @return
+     */
     private int updateAmountLeft() {
         numbers.clear();
         helper = new  SQLiteHelper(getBaseContext(), "SSDStore.db", null, 1);
@@ -118,45 +132,46 @@ public class Buy extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if(v.getId() == buttons.get(0).getId()) {
-
+                        if(currentItems.size() > 0) {
+                            Intent intent = new Intent(v.getContext(),Receipt.class);
+                            intent.putExtra("parcel_data", currentItems);
+                            startActivity(intent);
+                            finish();
+                        }
                     } else {
-                        if(currentTypes.size() > 0) {
+                        if(currentItems.size() > 0) {
                             int counter = 0;
-
-                            for (int j = 0; j < currentTypes.size(); j++) {
-                                if (spinners.get(0).getSelectedItem().toString().equals(currentTypes.get(j))) {
+                            for (int j = 0; j < currentItems.size(); j++) {
+                                if (spinners.get(0).getSelectedItem().toString().equals(currentItems.get(j).getName())) {
                                     counter++;
-                                    currentAmount.set(j, currentAmount.get(j) + Integer.parseInt(spinners.get(1).getSelectedItem().toString()));
-                                    currentPrices.set(j, Integer.parseInt(prices.get(spinners.get(0).getSelectedItemPosition()))
-                                            * currentAmount.get(j));
+                                    currentItems.get(j).setNumber(currentItems.get(j).getNumber() + Integer.parseInt(spinners.get(1).getSelectedItem().toString()));
+                                    currentItems.get(j).setPrice(Integer.parseInt(prices.get(spinners.get(0).getSelectedItemPosition()))
+                                            * currentItems.get(j).getNumber());
                                 }
                             }
 
                             if(counter == 0) {
-                                currentTypes.add(spinners.get(0).getSelectedItem().toString());
-                                currentAmount.add(Integer.parseInt(spinners.get(1).getSelectedItem().toString()));
 
-                                for (int j = 0; j < types.size(); j++) {
-                                    if(spinners.get(0).getSelectedItem().toString().equals(types.get(j))) {
-                                        currentPrices.add(Integer.parseInt(prices.get(j))
-                                                * Integer.parseInt(spinners.get(1).getSelectedItem().toString()));
+                                for (int j = 0; j < items.size(); j++) {
+                                    if(spinners.get(0).getSelectedItem().toString().equals(items.get(j).getName())) {
+                                        currentItems.add( new Items(spinners.get(0).getSelectedItem().toString(),
+                                                items.get(j).getPrice() * Integer.parseInt(spinners.get(1).getSelectedItem().toString()),
+                                                Integer.parseInt(spinners.get(1).getSelectedItem().toString())));
                                     }
                                 }
                             }
                         } else {
-                            currentTypes.add(spinners.get(0).getSelectedItem().toString());
-                            currentAmount.add(Integer.parseInt(spinners.get(1).getSelectedItem().toString()));
-
-                            for (int j = 0; j < types.size(); j++) {
-                                if(spinners.get(0).getSelectedItem().toString().equals(types.get(j))) {
-                                    currentPrices.add(Integer.parseInt(prices.get(j))
-                                            * Integer.parseInt(spinners.get(1).getSelectedItem().toString()));
+                            for (int j = 0; j < items.size(); j++) {
+                                if(spinners.get(0).getSelectedItem().toString().equals(items.get(j).getName())) {
+                                    currentItems.add( new Items(spinners.get(0).getSelectedItem().toString(),
+                                            items.get(j).getPrice() * Integer.parseInt(spinners.get(1).getSelectedItem().toString()),
+                                            Integer.parseInt(spinners.get(1).getSelectedItem().toString())));
                                 }
                             }
                         }
 
-                        String[] data = new String[currentTypes.size()];
-                        myadapter = new MyAdapter((Activity)v.getContext(), data, currentTypes, currentPrices, currentAmount);
+                        String[] data = new String[currentItems.size()];
+                        myadapter = new MyAdapter((Activity)v.getContext(), data, currentItems);
                         listView.setAdapter(myadapter);
                         myadapter.notifyDataSetChanged();
 
@@ -190,6 +205,9 @@ public class Buy extends AppCompatActivity {
         }
     }
 
+    /**
+     * void
+     */
     private void starThread() {
         new Thread(new Runnable() {
             public void run() {
@@ -202,30 +220,35 @@ public class Buy extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * void
+     */
     private void insertSSD() {
         if(db != null)
         {
             types = new ArrayList<String> (Arrays.asList(getResources().getStringArray(R.array.ssdtypes)));
             prices = new ArrayList<String> (Arrays.asList(getResources().getStringArray(R.array.ssdprices)));
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    "This is a message displayed in a Toast",
-                    Toast.LENGTH_SHORT);
 
-            toast.show();
             for(int i = 0; i < types.size(); i++)
             {
                 db.execSQL("INSERT INTO " + TABLE_SSD +
                         " VALUES ('" + types.get(i) + "', " + Integer.parseInt(prices.get(i)) + ", " + amount + ")");
+                items.add(new Items(types.get(i), Integer.parseInt(prices.get(i)), amount));
             }
+
             db.close();
         }
     }
 
+    /**
+     * int
+     * @return
+     */
     private int calculatetotal() {
         int total = 0;
 
-        for (int i = 0; i < currentPrices.size(); i++) {
-            total += currentPrices.get(i);
+        for (int i = 0; i < currentItems.size(); i++) {
+            total += currentItems.get(i).getPrice();
         }
         textView.setText("" + total + " €");
         return total;
