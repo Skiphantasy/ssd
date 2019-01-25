@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "88108498727",
+    "firebase_url": "https://ssdstoreapp.firebaseio.com",
+    "project_id": "ssdstoreapp",
+    "storage_bucket": "ssdstoreapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:88108498727:android:30eda817e8e78d1f",
+        "android_client_info": {
+          "package_name": "com.skipha.ssdstoreapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "88108498727-75l5tdmm09mir0bodb7ode2amiobdp0i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skipha.ssdstoreapp",
+            "certificate_hash": "d122c604bab0dac21e589662017333bf2c381956"
+          }
+        },
+        {
+          "client_id": "88108498727-7bee83oj4ti5of58r3ruk1a72atbi95c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLjj_YTodNOe2PMoSeeSEONhbsSkaoU5Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "88108498727-7bee83oj4ti5of58r3ruk1a72atbi95c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
