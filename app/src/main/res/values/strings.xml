@@ -19,7 +19,7 @@
     <string name="menu_buttons">4</string>
     <string name="spinners">2</string>
     <string name="amount">10</string>
-
+    <string name="toast">Petición al proveedor. Stock Actualizado</string>
 
     <string-array name="ssdtypes">
         <item>Samsung 850 PRO 128 GB</item>

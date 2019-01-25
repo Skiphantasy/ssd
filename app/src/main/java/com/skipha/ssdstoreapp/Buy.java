@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -24,7 +25,8 @@ public class Buy extends AppCompatActivity {
     private static int amount;
     private static final String TABLE_RECEIPTS = "receipts";
     private static final String TABLE_ITEMS = "items";
-    MyAdapter myadapter;
+    private MyAdapter myadapter;
+    private String toastMsg;
     private  ArrayList<Items> items;
     private ArrayList<String> types;
     private ArrayList<String> currentTypes;
@@ -40,6 +42,7 @@ public class Buy extends AppCompatActivity {
     private SQLiteHelper helper;
     private RelativeLayout relativeLayout;
     private ListView listView;
+    private TextView textView;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +50,7 @@ public class Buy extends AppCompatActivity {
         helper = new  SQLiteHelper(this, "SSDStore.db", null, 1);
         db = helper.getWritableDatabase();
         relativeLayout = findViewById(R.id.rlay);
+        textView = findViewById(R.id.textView24);
         items = new ArrayList<>();
         buttons = new ArrayList<>();
         spinners = new ArrayList<>();
@@ -61,6 +65,7 @@ public class Buy extends AppCompatActivity {
         fillButtons();
         spinnersCount = Integer.parseInt(getResources().getString(R.string.menu_buttons));
         insertSSD();
+        toastMsg = getResources().getString(R.string.toast);
 
         for (int i = 0; i < spinnersCount; i++) {
             String spner = "spinner" + (i + 1);
@@ -70,24 +75,7 @@ public class Buy extends AppCompatActivity {
         spinners.get(0).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String itemSelected = parent.getSelectedItem().toString();
-                numbers.clear();
-                helper = new  SQLiteHelper(getBaseContext(), "SSDStore.db", null, 1);
-                db = helper.getReadableDatabase();
-                String query = "SELECT * FROM " + TABLE_SSD + " WHERE nombre LIKE '" + itemSelected + "'";
-                Cursor cursor = db.rawQuery(query, null);
-                cursor.moveToNext();
-
-                for (int i = 0; i < Integer.parseInt(cursor.getString(cursor.getColumnIndex("cantidad"))); i++) {
-                    numbers.add("" + (i + 1));
-                }
-
-                adapter = new ArrayAdapter(getBaseContext(),
-                        android.R.layout.simple_spinner_dropdown_item,
-                        numbers);
-                spinners.get(1).setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-
+                updateAmountLeft();
             }
 
             @Override
@@ -95,7 +83,27 @@ public class Buy extends AppCompatActivity {
 
             }
         });
+    }
 
+    private int updateAmountLeft() {
+        numbers.clear();
+        helper = new  SQLiteHelper(getBaseContext(), "SSDStore.db", null, 1);
+        db = helper.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_SSD + " WHERE nombre LIKE '"
+                + spinners.get(0).getSelectedItem().toString() + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToNext();
+
+        for (int i = 0; i < Integer.parseInt(cursor.getString(cursor.getColumnIndex("cantidad"))); i++) {
+            numbers.add("" + (i + 1));
+        }
+
+        adapter = new ArrayAdapter(getBaseContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                numbers);
+        spinners.get(1).setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        return Integer.parseInt(cursor.getString(cursor.getColumnIndex("cantidad")));
     }
 
     private void fillButtons() {
@@ -151,11 +159,49 @@ public class Buy extends AppCompatActivity {
                         myadapter = new MyAdapter((Activity)v.getContext(), data, currentTypes, currentPrices, currentAmount);
                         listView.setAdapter(myadapter);
                         myadapter.notifyDataSetChanged();
+
+                        helper = new  SQLiteHelper(getBaseContext(), "SSDStore.db", null, 1);
+                        db = helper.getReadableDatabase();
+                        String query = "SELECT * FROM " + TABLE_SSD + " WHERE nombre LIKE '"
+                                + spinners.get(0).getSelectedItem().toString() + "'";
+                        Cursor cursor = db.rawQuery(query, null);
+                        cursor.moveToNext();
+                        int totalLeft = Integer.parseInt(cursor.getString(cursor.getColumnIndex("cantidad")));
+                        db.close();
+
+                        helper = new  SQLiteHelper(getBaseContext(), "SSDStore.db", null, 1);
+                        db = helper.getWritableDatabase();
+                        db.execSQL("UPDATE " + TABLE_SSD + " SET cantidad = " + (totalLeft - Integer.parseInt(spinners.get(1).getSelectedItem().toString()))
+                                +"  WHERE nombre LIKE '"
+                                + spinners.get(0).getSelectedItem().toString() + "'");
+                    }
+                    calculatetotal();
+
+                    if (updateAmountLeft() <= 2) {
+                        Toast toast = Toast.makeText(getApplicationContext(),
+                                toastMsg,
+                                Toast.LENGTH_SHORT);
+                        toast.show();
+                        starThread();
+                        updateAmountLeft();
                     }
                 }
             });
         }
     }
+
+    private void starThread() {
+        new Thread(new Runnable() {
+            public void run() {
+                helper = new  SQLiteHelper(getBaseContext(), "SSDStore.db", null, 1);
+                db = helper.getWritableDatabase();
+                db.execSQL("UPDATE " + TABLE_SSD + " SET cantidad = " + 10
+                        +"  WHERE nombre LIKE '"
+                        + spinners.get(0).getSelectedItem().toString() + "'");
+            }
+        }).start();
+    }
+
     private void insertSSD() {
         if(db != null)
         {
@@ -173,5 +219,15 @@ public class Buy extends AppCompatActivity {
             }
             db.close();
         }
+    }
+
+    private int calculatetotal() {
+        int total = 0;
+
+        for (int i = 0; i < currentPrices.size(); i++) {
+            total += currentPrices.get(i);
+        }
+        textView.setText("" + total + " €");
+        return total;
     }
 }

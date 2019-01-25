@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="56dp"
+        android:layout_marginStart="68dp"
         android:layout_marginTop="171dp"
         android:text="@string/ssd_header" />
 
@@ -34,39 +34,31 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="243dp"
+        android:layout_marginStart="252dp"
         android:layout_marginTop="171dp"
         android:text="@string/ssd_price_header"
         android:textAlignment="center" />
 
     <ListView
         android:id="@+id/listview"
-        android:layout_width="294dp"
-        android:layout_height="210dp"
+        android:layout_width="346dp"
+        android:layout_height="242dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="48dp"
+        android:layout_marginStart="21dp"
         android:layout_marginTop="198dp"
         android:background="@android:drawable/alert_light_frame" />
-
-    <TextView
-        android:id="@+id/textView23"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="-2dp"
-        android:layout_marginBottom="78dp"
-        android:layout_toStartOf="@+id/button2"
-        android:text="@string/total" />
 
     <TextView
         android:id="@+id/textView24"
         android:layout_width="84dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/textView11"
+        android:layout_below="@+id/listview"
+        android:layout_alignBottom="@+id/listview"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="23dp"
-        android:layout_marginBottom="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="-19dp"
         android:text="@string/total_amount"
         android:textAlignment="textEnd" />
 
@@ -76,8 +68,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="27dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginBottom="0dp"
         android:text="@string/buy_button" />
 
     <Spinner
@@ -131,4 +123,12 @@
         android:layout_marginEnd="12dp"
         android:text="@string/addbutton"
         android:textSize="10dp" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView24"
+        android:layout_toStartOf="@+id/textView24"
+        android:text="@string/total" />
 </RelativeLayout>
